@@ -30,11 +30,10 @@
 <script setup>
 import { ref} from "vue";
 import { useRouter } from "vue-router";
-import { onBeforeUnmount } from 'vue';
-import { onMounted } from "vue";
-import { useDrawStore } from "@/stores/drawStore";
 import axios from 'axios';
 import fs from 'fs';
+import { onBeforeUnmount } from 'vue';
+import { onMounted } from "vue";
 import { postGenerateApi } from "@/api/generateApi";
 import { getBlob } from "@/utils/getblob.js";
 import { ElLoading } from "element-plus";
@@ -55,7 +54,6 @@ const handleStep = (mystep) => {
   }
 }
 
-//录音
 const recordButton = ref(false);
 const transcription = ref('');
 const showTranscription = ref(false);
@@ -70,8 +68,11 @@ const startRecording = () => {
   isRecording = true;
   showTranscription.value = true;
   transcription.value = '......';
+
   showRipple.value = true;
+
   recognition.start();
+
   recognition.onresult = function(event) {
     let result = event.results[0][0].transcript;
     transcription.value = result;
@@ -83,14 +84,19 @@ const startRecording = () => {
 
   recognition.onerror = function(event) {
     transcription.value = '发生错误，请重试。';
+    
     showRipple.value = false;
+    
   }
 }
 
 const stopRecording = () => {
   isRecording = false;
   recognition.stop();
+
   showRipple.value = false;
+
+  
 
   if (lastTranscription.trim() === '') {
     showTranscription.value = false;
