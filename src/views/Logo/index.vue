@@ -1,35 +1,101 @@
 <template>
   <div class="logomain">
     <CommonHeader></CommonHeader>
-    logo生成页面
-    <div v-if="nowStep===1">第一步</div>
+    <div v-if="nowStep===1">
+      <div class="message-box">
+        <p class="message-box-text">请向我描述您所需的logo模样。</p>
+      </div>
+      <p class="example-title">案例参考</p>
+      <p class="example-text">小鸭子坐在火车上&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;三层简约蛋糕切片
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;三文鱼和叉子
+        <br>小猫坐在船上，旁边散落一些花瓣</p>
+      <div class="transcription-box" v-if="transcription !== ''">
+        <div id="transcription" class="record">
+          <span class="record-text">{{ transcription }}</span>
+        </div>
+      </div>
+      <div class="ripple-container" v-if="showRipple">
+        <div class="ripple"></div>
+      </div>
+      <img ref="recordButton" @touchstart="startRecording" @touchend="stopRecording" src="@/assets/images/voice.png" class="record-button"/>
+    </div>
     <div v-if="nowStep===2">第二步</div>
     <div v-if="nowStep===3">第三步</div>
     <div v-if="nowStep===4">第四步</div>
-    <PageChangeComp :nowStep="nowStep" :total-steps="4" @change-step="handleStep" @start-create="handleCreate"></PageChangeComp>
+    <PageChangeComp :nowStep="nowStep" :total-steps="4" @change-step="handleStep" @start-create="handleCreate" v-if="button"></PageChangeComp>
 
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref} from "vue";
 import { useRouter } from "vue-router";
+import { onBeforeUnmount } from 'vue';
+import { onMounted } from "vue";
+import { useDrawStore } from "@/stores/drawStore";
+import axios from 'axios';
+import fs from 'fs';
 import { postGenerateApi } from "@/api/generateApi";
 import { getBlob } from "@/utils/getblob.js";
 import { ElLoading } from "element-plus";
-import { onMounted } from "vue";
 import { getViewApi } from "@/api/userApi";
-import { useDrawStore } from "@/stores/drawStore";
-const router=useRouter()
 import { showNotify } from "vant";
-const drawStore=useDrawStore()
+import { fa } from "element-plus/es/locales.mjs";
+import { addNumber } from "vant/lib/utils";
+const router = useRouter();
 let nowStep = ref(1);
+let showRipple = ref(false);
 const handleStep = (mystep) => {
+  
   // mystep的值为-1或1,对应改变nowStep的值
   console.log("mystep", mystep);
   nowStep.value += mystep;
-};
+  if(nowStep.value==1 && mystep==-1){
+    window.location.reload();
+  }
+}
 
+//录音
+const recordButton = ref(false);
+const transcription = ref('');
+const showTranscription = ref(false);
+let recognition = new webkitSpeechRecognition();
+recognition.lang = 'zh-CN'; // 设置语言为中文
+
+let isRecording = false;
+let button = false;
+let lastTranscription = '';
+
+const startRecording = () => {
+  isRecording = true;
+  showTranscription.value = true;
+  transcription.value = '......';
+  showRipple.value = true;
+  recognition.start();
+  recognition.onresult = function(event) {
+    let result = event.results[0][0].transcript;
+    transcription.value = result;
+    lastTranscription = result;
+    button=true;
+    recordButton.value.style.display = "none";
+    
+  }
+
+  recognition.onerror = function(event) {
+    transcription.value = '发生错误，请重试。';
+    showRipple.value = false;
+  }
+}
+
+const stopRecording = () => {
+  isRecording = false;
+  recognition.stop();
+  showRipple.value = false;
+
+  if (lastTranscription.trim() === '') {
+    showTranscription.value = false;
+  }
+}
 
 // 点击生成与后端交互
 const handleCreate = () => {
@@ -116,5 +182,122 @@ router.push('/logo/view')
 </script>
 
 <style lang="scss" scoped>
+
+.message-box{
+box-sizing: border-box;
+height: 20vw;
+width: 60vw;
+margin-left: 5vw;
+margin-top: 2vw;
+border: 1px solid #464646;
+box-shadow: 0px 2px 3.1px 2px rgba(0, 0, 0, 0.11);
+border-radius: 0px 15px 15px 15px;
+}
+
+.message-box-text{
+width: 55vw;
+height: 30vw;
+padding: 3.5vw;
+font-family: 'Source Han Sans CN VF';
+font-style: normal;
+font-weight: bold;
+font-size: 4vw;
+line-height: 6vw;
+letter-spacing: 0.1vw;
+color: #585858;
+}
+
+.example-title{
+margin-left: 6.5vw;
+margin-top: 1.5vw;
+font-family: 'Inter';
+font-style: normal;
+font-size: 2.5vw;
+line-height: 6vw;
+letter-spacing: 0.1vw;
+color: #4D4D4D;
+}
+
+.example-text{
+margin-left:7.5vw;
+margin-top: -0.5vw;
+font-family: 'Source Han Sans CN VF';
+font-style: normal;
+font-size: 2.5vw;
+line-height: 6vw;
+letter-spacing: 0.1vw;
+color: #252525;
+}
+
+
+.record-button {
+position: fixed;
+left: 46vw;
+top: 150vw;
+}
+
+.ripple-container {
+  top: 50vw;
+  left: 50vw;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+}
+
+.ripple {
+  margin-top: 33vw;
+  margin-left: 51vw;
+  width: 20px;
+  height: 20px;
+  background-color: #4B6BFF;
+  border-radius: 50%;
+  transform: scale(6);
+  animation: rippleEffect 1.5s linear infinite;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+
+.record{
+box-sizing: border-box;
+position: absolute;
+max-width: 50vw;
+padding: 10px;
+border: 0.2vw solid #4B6BFF;
+box-shadow: 0px 2px 3.1px 2px rgba(0, 0, 0, 0.11);
+border-radius: 15px 0px 15px 15px;
+overflow-wrap: break-word;
+text-orientation: sideways-right;
+transform-origin: top right; /* 指定变换的原点 */
+}
+
+.transcription-box {
+margin-top: 5vw;
+margin-left: -8vw;
+width: 100%;
+height: 30vw;
+display: flex;
+justify-content: flex-end; /* 框位于画面最右侧 */
+align-items: flex-start;
+overflow: hidden;
+}
+
+.record-text{
+font-size: 5vw;
+padding: 3vw;
+font-family: 'Source Han Sans CN VF';
+font-style: normal;
+font-weight: 300;
+font-size: 4vw;
+line-height: 6vw;
+letter-spacing: 0.1vw;
+display: flex;
+align-items: center;
+color: #585858;
+}
 
 </style>
