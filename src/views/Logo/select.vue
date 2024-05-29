@@ -122,7 +122,10 @@ const gridItems3 = ref([
 const selectedName3 = ref(null);
 
 const handleClick = (name, gridNumber) => {
-  if (gridNumber === 1) {
+
+  clearSelections();
+
+  if (gridNumber === 1 ) {
     // 更新选中名称（第一个网格）
     selectedName1.value = name;
   } else if (gridNumber === 2) {
@@ -131,10 +134,16 @@ const handleClick = (name, gridNumber) => {
     selectedName3.value = name;
   } else if (gridNumber === 4) {
     selectedName4.value = name;
-  }else if (gridNumber === 5) {
+  } else if (gridNumber === 5) {
     selectedName5.value = name;
   }
 };
+
+const clearSelections = () => {
+  selectedName1.value = null;
+  selectedName2.value = null;
+  selectedName3.value = null;
+}
 
 const drawStore = useDrawStore();
 const router = useRouter();
