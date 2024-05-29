@@ -7,19 +7,19 @@
         <p class="message-box-text">常用标签预设推荐，如果合适请勾选。</p>
       </div>
       <div class="item-container1">
-              <div v-for="item in gridItems1" :key="item.name" class="xuanxiang1" @click="handleClick(item.name, 1)"
+              <div v-for="item in gridItems1" :key="item.name" class="xuanxiang1" @click="handleClick1(item.name, 1)"
                 :class="{ selected: selectedName1 === item.name }">
                 {{ item.name }}
               </div>
        </div>
        <div class="item-container2">
-              <div v-for="item in gridItems4" :key="item.name" class="xuanxiang1" @click="handleClick(item.name, 2)"
+              <div v-for="item in gridItems4" :key="item.name" class="xuanxiang1" @click="handleClick1(item.name, 2)"
                 :class="{ selected: selectedName2 === item.name }">
                 {{ item.name }}
               </div>
        </div>
        <div class="item-container3">
-              <div v-for="item in gridItems5" :key="item.name" class="xuanxiang1" @click="handleClick(item.name, 3)"
+              <div v-for="item in gridItems5" :key="item.name" class="xuanxiang1" @click="handleClick1(item.name, 3)"
                 :class="{ selected: selectedName3 === item.name }">
                 {{ item.name }}
               </div>
@@ -28,7 +28,7 @@
         <div class="line"></div>
 
         <div class="item-container4">
-              <div v-for="item in gridItems2" :key="item.name" class="xuanxiang2" @click="handleClick(item.name, 4)"
+              <div v-for="item in gridItems2" :key="item.name" class="xuanxiang2" @click="handleClick2(item.name, 4)"
                 :class="{ selected: selectedName4 === item.name }">
                 {{ item.name }}
               </div>
@@ -37,7 +37,7 @@
        <div class="line"></div>
 
        <div class="item-container5">
-              <div v-for="item in gridItems3" :key="item.name" class="xuanxiang3" @click="handleClick(item.name, 5)"
+              <div v-for="item in gridItems3" :key="item.name" class="xuanxiang3" @click="handleClick2(item.name, 5)"
                 :class="{ selected: selectedName5 === item.name }">
                 {{ item.name }}
               </div>
@@ -121,7 +121,7 @@ const gridItems3 = ref([
 ]);
 const selectedName3 = ref(null);
 
-const handleClick = (name, gridNumber) => {
+const handleClick1 = (name, gridNumber) => {
 
   clearSelections();
 
@@ -144,6 +144,15 @@ const clearSelections = () => {
   selectedName2.value = null;
   selectedName3.value = null;
 }
+
+const handleClick2 = (name, gridNumber) => {
+
+if (gridNumber === 4) {
+  selectedName4.value = name;
+} else if (gridNumber === 5) {
+  selectedName5.value = name;
+}
+};
 
 const drawStore = useDrawStore();
 const router = useRouter();
