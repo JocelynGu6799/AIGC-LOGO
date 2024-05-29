@@ -9,7 +9,7 @@
       <p class="example-text">小鸭子坐在火车上&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;三层简约蛋糕切片
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;三文鱼和叉子
         <br>小猫坐在船上，旁边散落一些花瓣</p>
-      <div class="transcription-box" v-if="transcription !== ''">
+      <div class="transcription-box" v-if="showTranscription">
         <div id="transcription" class="record">
           <span class="record-text">{{ transcription }}</span>
         </div>
@@ -17,7 +17,7 @@
       <div class="ripple-container" v-if="showRipple">
         <div class="ripple"></div>
       </div>
-      <img ref="recordButton" @touchstart="startRecording" @touchend="stopRecording" src="@/assets/images/voice.png" class="record-button"/>
+      <img ref="recordButton" @touchstart="startRecording" @touchend="stopRecording" src="@/assets/images/voice.png" class="record-button" id="record-button"/>
     </div>
     <div v-if="nowStep===2">第二步</div>
     <div v-if="nowStep===3">第三步</div>
@@ -44,6 +44,11 @@ import { addNumber } from "vant/lib/utils";
 const router = useRouter();
 let nowStep = ref(1);
 let showRipple = ref(false);
+
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+}, false);
+
 const handleStep = (mystep) => {
   
   // mystep的值为-1或1,对应改变nowStep的值
@@ -68,14 +73,13 @@ const startRecording = () => {
   isRecording = true;
   showTranscription.value = true;
   transcription.value = '......';
-
   showRipple.value = true;
-
   recognition.start();
 
   recognition.onresult = function(event) {
     let result = event.results[0][0].transcript;
     transcription.value = result;
+    showTranscription.value = true;
     lastTranscription = result;
     button=true;
     recordButton.value.style.display = "none";
@@ -83,8 +87,8 @@ const startRecording = () => {
   }
 
   recognition.onerror = function(event) {
+    showTranscription.value = true;
     transcription.value = '发生错误，请重试。';
-    
     showRipple.value = false;
     
   }
@@ -188,6 +192,15 @@ router.push('/logo/view')
 </script>
 
 <style lang="scss" scoped>
+
+body {
+    -webkit-touch-callout: none; /* iOS和Safari浏览器 */
+    -webkit-user-select: none; /* WebKit浏览器 */
+    -khtml-user-select: none; /* Konqueror浏览器 */
+    -moz-user-select: none; /* Firefox浏览器 */
+    -ms-user-select: none; /* IE/Edge浏览器 */
+    user-select: none; /* 标准语法 */
+}
 
 .message-box{
 box-sizing: border-box;
