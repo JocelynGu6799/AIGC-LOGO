@@ -5,3 +5,6 @@ export const postGenerateApi=(fd:any,queryParams:any)=>{
         params: queryParams
     })
 }
+export const postLogo=(jsonData:any)=>{
+    return req.post<any,any>(base.logopost,jsonData)
+}

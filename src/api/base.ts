@@ -1,10 +1,11 @@
 // 导出所有接口
 const base = {
-    host: 'http://8.149.139.56:8388', // 域名
+    host: 'https://u262838-87ee-75614327.westx.seetacloud.com:8443', // 域名
     // host: '', // 域名
     generate:'/generate',
     view:'/view',
-    login:'/login'
+    login:'/login',
+    logopost:'/prompt'
     
   
   }

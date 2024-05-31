@@ -3,7 +3,7 @@
         <!-- 当前是第 {{ nowStep }}个步骤 -->
         <VanButton class="laststep" v-if="nowStep !== 1" @click="handleStep(-1)">上一步</VanButton>
         <VanButton class="nextstep" v-if="nowStep < totalSteps" @click="handleStep(1)">下一步</VanButton>
-        <VanButton class="resetbtn" v-if="nowStep === 1" @click="handleReset">重新输入</VanButton>
+        <VanButton class="resetbtn" v-if="nowStep === 1" @click="handleReset">上一步</VanButton>
         <VanButton class="createbtn" v-if="nowStep === totalSteps" @click="handleCreate">生成</VanButton>
 
     </div>

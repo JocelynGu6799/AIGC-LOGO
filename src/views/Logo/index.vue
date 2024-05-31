@@ -1,7 +1,7 @@
 <template>
-  <div class="logomain" @contextmenu.prevent>
+  <div class="logomain">
     <CommonHeader></CommonHeader>
-    <div v-if="nowStep===1">
+    <div>
       <div class="message-box">
         <p class="message-box-text">请向我描述您所需的logo模样。</p>
       </div>
@@ -19,34 +19,42 @@
       </div>
       <img ref="recordButton" @touchstart="startRecording" @touchend="stopRecording" src="@/assets/images/voice.png" class="record-button"/>
     </div>
-    <div v-if="nowStep===2"></div>
+    <div class="buttons" v-if="button">
+      <VanButton class="resetbtn" @click="handleReset">重新输入</VanButton>
+        <VanButton class="createbtn"  @click="router.push('/logo/select')">下一步</VanButton>
+    </div>
+    
+    <!-- <div v-if="nowStep===2">第二步</div>
     <div v-if="nowStep===3">第三步</div>
     <div v-if="nowStep===4">第四步</div>
-    <PageChangeComp :nowStep="nowStep" :total-steps="4" @change-step="handleStep" @start-create="handleCreate" v-if="button"></PageChangeComp>
+    <PageChangeComp :nowStep="nowStep" :total-steps="4" @change-step="handleStep" @start-create="handleCreate" v-if="button"></PageChangeComp> -->
 
   </div>
 </template>
 
-
-
 <script setup>
-import { ref } from "vue";
+import { ref} from "vue";
 import { useRouter } from "vue-router";
 import axios from 'axios';
+import fs from 'fs';
+import { onBeforeUnmount } from 'vue';
+import { onMounted } from "vue";
 import { postGenerateApi } from "@/api/generateApi";
 import { getBlob } from "@/utils/getblob.js";
 import { ElLoading } from "element-plus";
-import { onMounted } from "vue";
 import { getViewApi } from "@/api/userApi";
-import { useDrawStore } from "@/stores/drawStore";
-const router = useRouter();
 import { showNotify } from "vant";
 import { fa } from "element-plus/es/locales.mjs";
 import { addNumber } from "vant/lib/utils";
-
-const drawStore = useDrawStore();
-let nowStep = ref(2);
+import { useDrawStore } from "@/stores/drawStore";
+const router = useRouter();
+let nowStep = ref(1);
 let showRipple = ref(false);
+const handleReset = () => {
+    // 刷新页面
+    window.location.reload();
+    // router.push('/logo')
+}
 const handleStep = (mystep) => {
   
   // mystep的值为-1或1,对应改变nowStep的值
@@ -57,81 +65,55 @@ const handleStep = (mystep) => {
   }
 }
 
-
-//录音设置
 const recordButton = ref(false);
 const transcription = ref('');
 const showTranscription = ref(false);
 let recognition = new webkitSpeechRecognition();
 recognition.lang = 'zh-CN'; // 设置语言为中文
 
+let isRecording = false;
 let button = false;
 let lastTranscription = '';
-
-const API_URL = `http://10.45.8.111:5003/RealTimeTranscript`;
-
-// 初始化MediaRecorder（录音功能）
-let mediaRecorder;
-let recordedChunks = [];
-
-navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-  mediaRecorder = new MediaRecorder(stream);
-  mediaRecorder.addEventListener('dataavailable', (event) => {
-    recordedChunks.push(event.data);
-  });
-});
-
+const drawStore=useDrawStore()
 const startRecording = () => {
+  isRecording = true;
   showTranscription.value = true;
   transcription.value = '......';
+
   showRipple.value = true;
-  
-  if (!mediaRecorder) {
-    console.error('MediaRecorder not initialized');
-	showRipple.value = false;
-    return;
+
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    let result = event.results[0][0].transcript;
+    transcription.value = result;
+    drawStore.voiceinput=result
+    lastTranscription = result;
+    button=true;
+    recordButton.value.style.display = "none";
+    
   }
-  mediaRecorder.start();
-};
+
+  recognition.onerror = function(event) {
+    transcription.value = '发生错误，请重试。';
+    
+    showRipple.value = false;
+    
+  }
+}
 
 const stopRecording = () => {
+  isRecording = false;
+  recognition.stop();
+
   showRipple.value = false;
 
-  if (mediaRecorder) {
-    mediaRecorder.stop();
-    const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
-    recordedChunks = [];
-
-    // 发送POST请求
-    const formData = new FormData();
-    formData.append('file', audioBlob, 'recording.wav');
-
-    axios.post(API_URL, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    .then((response) => {
-      // 处理响应数据 
-      const transcript = response.data.transcript;
-      transcription.value = transcript;
-      lastTranscription = transcript;
-      button = true;
-      recordButton.value.style.display = "none";
-    })
-    .catch((error) => {
-      // 处理错误
-      console.error('语音识别请求失败:', error);
-      transcription.value = '发生错误，请重试。';
-      showRipple.value = false;
-    });
-  }
+  
 
   if (lastTranscription.trim() === '') {
     showTranscription.value = false;
   }
-};
-
+}
 
 // 点击生成与后端交互
 const handleCreate = () => {
@@ -335,5 +317,40 @@ display: flex;
 align-items: center;
 color: #585858;
 }
+.van-button {
+    width: 32.4vw;
+    height: 9.72vw;
+    font-size: 4vw;
+    font-weight: bold;
+    /* letter-spacing: 5px; */
+    position: absolute;
+    bottom: 13.888vw;
+    border-radius: 1vw;
+    /* top: 730px; */
+    border:0.5vw solid #4768FF;
 
+
+
+}
+
+.laststep,
+.resetbtn {
+    /* background-color: #E3E3E3; */
+    color: #4768FF;
+    left: 10.42vw;
+
+
+
+}
+
+.nextstep,
+.createbtn {
+    background-color: #4768FF;
+    color: white;
+    right: 10.42vw;
+    /* bottom: 85px; */
+
+
+
+}
 </style>
