@@ -238,8 +238,8 @@ const handleCreate = () => {
             "61": { "inputs": { "ipadapter_file": "ip-adapter_sdxl.safetensors" }, "class_type": "IPAdapterModelLoader" },
             "63": { "inputs": { "clip_name": "CLIP-ViT-bigG-14-laion2B-39B-b160k.safetensors" }, "class_type": "CLIPVisionLoader" },
             "3": { "inputs": { "weight": 0.6, "weight_type": "linear", "combine_embeds": "concat", "start_at": 0, "end_at": 1, "embeds_scaling": "V only", "model": ["27", 0], "ipadapter": ["61", 0], "image": ["2", 0], "clip_vision": ["63", 0] }, "class_type": "IPAdapterAdvanced" },
-            // "2": { "inputs": { "image": logoname.value?logoname.value:"KUMO.jpg", "upload": "image" }, "class_type": "LoadImage" },
-            "2": { "inputs": { "image": "KUMO.jpg", "upload": "image" }, "class_type": "LoadImage" },
+            "2": { "inputs": { "image": logoname.value?logoname.value:"KUMO.jpg", "upload": "image" }, "class_type": "LoadImage" },
+            // x"2": { "inputs": { "image": "KUMO.jpg", "upload": "image" }, "class_type": "LoadImage" },
             "100": { "inputs": { "filename_prefix": "Logo", "images": ["52", 0] }, "class_type": "SaveImage" }
         }
     }
@@ -256,10 +256,10 @@ const handleCreate = () => {
         if(receivedMessage.value.type==='executed'){
             drawStore.logooutputs=receivedMessage.value.data.output.images
             console.log("绘图成功",drawStore.logooutputs)
-            setTimeout(()=>{
+            // setTimeout(()=>{
                 loadingInstance.close()
             router.push('/logo/view')
-            },500)
+            // },500)
           
         }
         else{
@@ -383,11 +383,11 @@ const toggleLogoSelection = (logoRef) => {
     switch (logoRef) {
         case 'cuzlogo':
             cuzlogo.value.classList.add('logoselected');
-            logoname.value='cuz.png'
+            logoname.value='xiaohui.png'
             break;
         case 'logo2':
             logo2.value.classList.add('logoselected');
-            logoname.value='gczx.png'
+            logoname.value='zhongxin.jpg'
 
             break;
         default:
@@ -440,7 +440,7 @@ const clearLogoSelections = () => {
 
 .item-container1 .selected {
     background-color: white;
-    background-image: url('src/assets/images/diamond1.png');
+    background-image: url('@/assets/images/diamond1.png');
 }
 
 .item-container2 {
@@ -454,7 +454,7 @@ const clearLogoSelections = () => {
 
 .item-container2 .selected {
     background-color: white;
-    background-image: url('src/assets/images/diamond1.png');
+    background-image: url('@/assets/images/diamond1.png');
 }
 
 .item-container3 {
@@ -468,7 +468,7 @@ const clearLogoSelections = () => {
 
 .item-container3 .selected {
     background-color: white;
-    background-image: url('src/assets/images/diamond1.png');
+    background-image: url('@/assets/images/diamond1.png');
 }
 
 .item-container4 {
@@ -496,7 +496,7 @@ const clearLogoSelections = () => {
 
 .item-container5 .selected {
     background-color: white;
-    background-image: url('src/assets/images/label1.png');
+    background-image: url('@/assets/images/label1.png');
 }
 
 .xuanxiang1 {
@@ -521,7 +521,7 @@ const clearLogoSelections = () => {
     /* 设置垂直书写模式 */
     text-orientation: mixed;
     /* 确保文字方向混合 */
-    background-image: url('src/assets/images/diamond.png');
+    background-image: url('@/assets/images/diamond.png');
     /* 用你的图片路径替换 'src/assets/images/diamond.png' */
     background-size: cover;
     /* 确保背景图案覆盖整个区域 */
@@ -555,7 +555,7 @@ const clearLogoSelections = () => {
     cursor: pointer;
     overflow: hidden;
     /* 确保溢出部分被隐藏 */
-    background-image: url('src/assets/images/label.png');
+    background-image: url('@/assets/images/label.png');
     background-size: cover;
     /* 确保背景图案覆盖整个区域 */
 }
