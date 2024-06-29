@@ -47,6 +47,13 @@
   const toggleDetails = () => {
     showDetails.value = !showDetails.value;
   }
+
+  //调用自己设计的动效按钮组件
+  import { createApp } from 'vue'
+  const app = createApp({});
+  import NorButton from '@/components/NorButton.vue';
+  app.component('NorButton', NorButton);
+
   </script>
   
   <style scoped>
